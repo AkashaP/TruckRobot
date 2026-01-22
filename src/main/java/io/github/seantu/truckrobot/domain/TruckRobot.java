@@ -2,6 +2,13 @@ package io.github.seantu.truckrobot.domain;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * Models a TruckRobot operating in a grid of set size.
+ *
+ * The robot begins in an unplaced state.
+ * While unplaced, movement and rotation commands are ignored.
+ * All commands are validated to ensure the robot never leaves the table.
+ */
 @Component
 public final class TruckRobot {
 
@@ -15,6 +22,12 @@ public final class TruckRobot {
     private Facing facing;
     private boolean placed;
 
+    /**
+     * Checks if the location is in bounds
+     * @param x x location
+     * @param y y loation
+     * @return true if in bounds, false otherwise
+     */
     private boolean isInBounds(int x, int y) {
         return x >= MIN_X && x <= MAX_X && y >= MIN_Y && y <= MAX_Y;
     }
@@ -49,6 +62,13 @@ public final class TruckRobot {
         }
     }
 
+    /**
+     * Places the TruckRobot at the specified location and facing direction.
+     * This is ignored if it is out of bounds or null facing direction
+     * @param x int between MIN_X and MAX_X
+     * @param y int between MIN_Y and MAX_Y
+     * @param facing facing direction
+     */
     public void place(int x, int y, Facing facing) {
         if (!isInBounds(x, y) || facing == null) {
             return;
@@ -59,6 +79,11 @@ public final class TruckRobot {
         this.placed = true;
     }
 
+    /**
+     * Turns the TruckRobot in the specified direction.
+     * This is ignored if the TruckRobot hasn't been placed yet or null facing direction
+     * @param direction the direction to turn.
+     */
     public void turn(Direction direction) {
         if (!placed)
             return;
@@ -82,6 +107,13 @@ public final class TruckRobot {
         }
     }
 
+    /**
+     * Generates a report of the TruckRobot's location in the format:
+     * X,Y,FACING
+     *
+     * This will print ROBOT MISSING if it is not yet placed in the field.
+     * @return the report
+     */
     public String report() {
         if (isInBounds(x, y) && isPlaced()) {
             return x + "," + y + "," + facing;
