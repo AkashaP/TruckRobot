@@ -20,7 +20,7 @@ public class TruckRobotWebTest {
     void postCommandService() throws Exception {
         when(service.execute("REPORT")).thenReturn("ROBOT MISSING");
 
-        mvc.perform(post("/api/command")
+        mvc.perform(post("/api/v1/command")
                         .content("REPORT"))
                 .andExpect(status().isOk());
 
@@ -32,7 +32,7 @@ public class TruckRobotWebTest {
     void postMultipleCommandsService() throws Exception {
         when(service.execute("PLACE 0 0 NORTH,REPORT")).thenReturn("0,0,NORTH");
 
-        mvc.perform(post("/api/commands")
+        mvc.perform(post("/api/v1/commands")
                         .content("PLACE 0 0 NORTH,REPORT"))
                 .andExpect(status().isOk());
 
