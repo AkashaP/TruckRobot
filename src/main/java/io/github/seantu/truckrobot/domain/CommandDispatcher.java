@@ -1,4 +1,4 @@
-package io.github.seantu.truckrobot;
+package io.github.seantu.truckrobot.domain;
 
 import org.springframework.stereotype.Component;
 

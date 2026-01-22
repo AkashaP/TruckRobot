@@ -1,4 +1,4 @@
-package io.github.seantu.truckrobot;
+package io.github.seantu.truckrobot.domain;
 
 public enum Facing {
     NORTH,

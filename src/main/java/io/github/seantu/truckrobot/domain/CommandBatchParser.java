@@ -1,4 +1,4 @@
-package io.github.seantu.truckrobot;
+package io.github.seantu.truckrobot.domain;
 
 import java.util.Arrays;
 import java.util.List;

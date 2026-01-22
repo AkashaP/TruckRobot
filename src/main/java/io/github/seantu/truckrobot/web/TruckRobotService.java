@@ -1,8 +1,10 @@
-package io.github.seantu.truckrobot;
+package io.github.seantu.truckrobot.web;
 
+import io.github.seantu.truckrobot.domain.CommandBatchParser;
+import io.github.seantu.truckrobot.domain.CommandDispatcher;
+import io.github.seantu.truckrobot.domain.TruckRobot;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
