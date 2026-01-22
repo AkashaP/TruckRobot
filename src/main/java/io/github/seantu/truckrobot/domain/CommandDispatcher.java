@@ -21,14 +21,14 @@ public final class CommandDispatcher {
      *
      * Supported commands:
      * - PLACE x(int) y(int) NORTH|EAST|SOUTH|WEST
-     * - FORWARD
+     * - MOVE
      * - REPORT
      * - TURN LEFT|RIGHT
      *
      * EXAMPLES:
      * - "PLACE 0 0 NORTH"
      * - "TURN RIGHT"
-     * - "FORWARD"
+     * - "MOVE"
      *
      * Invalid inputs will generally be ignored.
      * @param command the command expression as specified above
@@ -54,8 +54,8 @@ public final class CommandDispatcher {
 
                 robot.place(x, y, facing);
             }
-            case "FORWARD" -> {
-                robot.forward();
+            case "MOVE", "FORWARD" -> {
+                robot.move();
             }
             case "TURN" -> {
                 if (tokens.length != 2) {

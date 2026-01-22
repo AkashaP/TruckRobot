@@ -13,8 +13,8 @@ public class CommandDispatcherTests {
         TruckRobot robot = mock(TruckRobot.class);
         // robot.forward();
         var parser = new CommandDispatcher();
-        parser.parseAndApply("FORWARD", robot);
-        verify(robot).forward();
+        parser.parseAndApply("MOVE", robot);
+        verify(robot).move();
     }
 
     @Test

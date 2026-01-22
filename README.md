@@ -12,9 +12,10 @@ The project is written in Java 21 and maven
 Places the robot at the given coordinates and facing direction.
 Invalid placements (out of bounds or null direction) are ignored.
 
-- FORWARD
+- MOVE
 Moves the robot one unit forward in the direction it is currently facing.
 Moves that would cause the robot to fall off the table are ignored.
+(also aliased to FORWARD)
 
 - TURN LEFT|RIGHT
 Rotates the robot 90 degrees left or right.
@@ -51,11 +52,11 @@ This is equivalent to sending individual commands to /api/v1/command
 The response will be the result of the last command in the batch.
 
 Example:
-"PLACE 1 1 NORTH,FORWARD,REPORT"
+"PLACE 1 1 NORTH,MOVE,REPORT"
 
 Example usage using curl:
 ```
-curl.exe -X POST http://localhost:8080/api/v1/commands -H "Content-Type: text/plain" --data "PLACE 1 1 NORTH,FORWARD,TURN LEFT,REPORT"
+curl.exe -X POST http://localhost:8080/api/v1/commands -H "Content-Type: text/plain" --data "PLACE 1 1 NORTH,MOVE,TURN LEFT,REPORT"
 1,2,WEST
 ```
 ### JSON API:

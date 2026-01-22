@@ -41,12 +41,12 @@ class TruckRobotTests {
     }
 
     @Test
-    void truckMovesForward() {
+    void truckMovesMove() {
         TruckRobot robot = new TruckRobot();
         robot.place(0,0, Facing.NORTH);
-        robot.forward();
+        robot.move();
         assertEquals("0,1,NORTH", robot.report());
-        robot.forward();
+        robot.move();
         assertEquals("0,2,NORTH", robot.report());
     }
 
@@ -76,27 +76,27 @@ class TruckRobotTests {
         // Move right by one
         robot.turn(Direction.RIGHT);
         assertEquals("0,2,EAST", robot.report());
-        robot.forward();
+        robot.move();
         assertEquals("1,2,EAST", robot.report());
 
         // Go to the bottom
         robot.turn(Direction.RIGHT);
         assertEquals("1,2,SOUTH", robot.report());
-        robot.forward();
+        robot.move();
         assertEquals("1,1,SOUTH", robot.report());
 
         // Move right by one
         robot.turn(Direction.LEFT);
         assertEquals("1,1,EAST", robot.report());
-        robot.forward();
+        robot.move();
         assertEquals("2,1,EAST", robot.report());
 
         // Go back up
         robot.turn(Direction.LEFT);
         assertEquals("2,1,NORTH", robot.report());
-        robot.forward();
+        robot.move();
         assertEquals("2,2,NORTH", robot.report());
-        robot.forward();
+        robot.move();
         assertEquals("2,3,NORTH", robot.report());
     }
 
@@ -115,27 +115,27 @@ class TruckRobotTests {
     @Test
     void truckIgnoresMoveWhenNotPlaced() {
         TruckRobot robot = new TruckRobot();
-        robot.forward();
+        robot.move();
         assertEquals("ROBOT MISSING", robot.report());
     }
 
     @Test
-    void truckDoesntMoveForwardIfAtEdge() {
+    void truckDoesntMoveMoveIfAtEdge() {
         TruckRobot robot = new TruckRobot();
         robot.place(0,0, Facing.SOUTH);
-        robot.forward();
+        robot.move();
         assertEquals("0,0,SOUTH", robot.report());
 
         robot.place(0,4, Facing.NORTH);
-        robot.forward();
+        robot.move();
         assertEquals("0,4,NORTH", robot.report());
 
         robot.place(4,4, Facing.EAST);
-        robot.forward();
+        robot.move();
         assertEquals("4,4,EAST", robot.report());
 
         robot.place(0,0, Facing.WEST);
-        robot.forward();
+        robot.move();
         assertEquals("0,0,WEST", robot.report());
     }
 }

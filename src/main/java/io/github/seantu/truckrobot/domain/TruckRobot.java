@@ -35,7 +35,7 @@ public final class TruckRobot {
     /**
      * Moves the truck forward in its facing direction if possible
      **/
-    public void forward() {
+    public void move() {
         if (!placed) {
             return;
         }
