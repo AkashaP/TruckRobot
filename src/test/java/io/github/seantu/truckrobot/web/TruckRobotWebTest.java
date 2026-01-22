@@ -6,6 +6,9 @@ import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -45,11 +48,11 @@ public class TruckRobotWebTest {
 
     @Test
     void postJSONCommandService() throws Exception {
-        when(service.execute("REPORT")).thenReturn("ROBOT MISSING");
+        when(service.execute("REPORT")).thenReturn("{\"output\":\"ROBOT MISSING\"}");
 
         mvc.perform(post("/api/v1/command")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content("REPORT"))
+                        .content("{ \"command\": \"REPORT\"}"))
                 .andExpect(status().isOk());
 
         verify(service).execute("REPORT");
@@ -58,14 +61,15 @@ public class TruckRobotWebTest {
 
     @Test
     void postJSONMultipleCommandsService() throws Exception {
-        when(service.execute("PLACE 0 0 NORTH,REPORT")).thenReturn("0,0,NORTH");
+        when(service.executeAll(List.of("PLACE 0 0 NORTH", "REPORT")))
+                .thenReturn(List.of("0,0,NORTH").toString());
 
         mvc.perform(post("/api/v1/commands")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content("PLACE 0 0 NORTH,REPORT"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"commands\": [\"PLACE 0 0 NORTH\", \"REPORT\"] }"))
                 .andExpect(status().isOk());
 
-        verify(service).executeAll("PLACE 0 0 NORTH,REPORT");
+        verify(service).executeAll(List.of("PLACE 0 0 NORTH", "REPORT"));
         verifyNoMoreInteractions(service);
     }
 
