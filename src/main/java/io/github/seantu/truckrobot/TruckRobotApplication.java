@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TruckrobotApplication {
+public class TruckRobotApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TruckrobotApplication.class, args);
+		SpringApplication.run(TruckRobotApplication.class, args);
 	}
 
 }
