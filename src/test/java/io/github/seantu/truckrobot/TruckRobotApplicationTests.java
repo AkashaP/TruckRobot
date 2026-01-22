@@ -75,9 +75,9 @@ class TruckRobotApplicationTests {
 
         // Move right by one
         robot.turn(Direction.RIGHT);
-        assertEquals("0,2,RIGHT", robot.report());
+        assertEquals("0,2,EAST", robot.report());
         robot.forward();
-        assertEquals("1,2,RIGHT", robot.report());
+        assertEquals("1,2,EAST", robot.report());
 
         // Go to the bottom
         robot.turn(Direction.RIGHT);
@@ -87,9 +87,9 @@ class TruckRobotApplicationTests {
 
         // Move right by one
         robot.turn(Direction.LEFT);
-        assertEquals("1,1,WEST", robot.report());
+        assertEquals("1,1,EAST", robot.report());
         robot.forward();
-        assertEquals("2,1,WEST", robot.report());
+        assertEquals("2,1,EAST", robot.report());
 
         // Go back up
         robot.turn(Direction.LEFT);
