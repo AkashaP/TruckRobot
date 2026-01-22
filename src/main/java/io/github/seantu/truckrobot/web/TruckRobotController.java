@@ -1,9 +1,14 @@
 package io.github.seantu.truckrobot.web;
 
+import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.constraints.*;
+import java.util.List;
 
+// v1 API – future versions can be under /api/v2
 @RestController
-@RequestMapping("/api/v1") // v1 API – future versions can coexist under /api/v2
+@RequestMapping(path = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TruckRobotController {
 
     private final TruckRobotService service;
@@ -12,13 +17,32 @@ public class TruckRobotController {
         this.service = service;
     }
 
-    @PostMapping("/command")
+    // Plaintext API
+
+    @PostMapping(path = "/command", consumes = MediaType.TEXT_PLAIN_VALUE)
     public String command(@RequestBody String command) {
         return this.service.execute(command);
     }
 
-    @PostMapping("/commands")
+    @PostMapping(path = "/commands", consumes = MediaType.TEXT_PLAIN_VALUE)
     public String commands(@RequestBody String commands) {
         return this.service.executeAll(commands);
+    }
+
+    // JSON API
+    // DTOs
+
+    public record CommandRequest(@NotBlank String command) {}
+    public record CommandsRequest(@NotEmpty List<String> commands) {}
+    public record Response(String output) {}
+
+    @PostMapping(path = "/command", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Response commandJson(@RequestBody CommandRequest command) {
+        return new Response(this.service.execute(command.command()));
+    }
+
+    @PostMapping(path = "/commands", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Response commandsJson(@RequestBody CommandsRequest commands) {
+        return new Response(this.service.executeAll(commands.commands()));
     }
 }
