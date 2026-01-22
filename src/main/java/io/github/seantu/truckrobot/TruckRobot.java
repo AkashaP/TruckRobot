@@ -1,5 +1,8 @@
 package io.github.seantu.truckrobot;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public final class TruckRobot {
 
     private static final int MIN_X = 0;

@@ -1,5 +1,8 @@
 package io.github.seantu.truckrobot;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public final class CommandDispatcher {
 
     private static Integer tryParseInt(String s) {
