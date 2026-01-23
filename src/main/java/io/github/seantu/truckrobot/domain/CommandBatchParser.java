@@ -12,6 +12,6 @@ public class CommandBatchParser {
      * @return a list of individual commands
      */
     public List<String> parseCommands(String commands) {
-        return Arrays.asList(commands.split(","));
+        return Arrays.asList(commands.trim().split(","));
     }
 }

@@ -1,5 +1,6 @@
 package io.github.seantu.truckrobot.web;
 
+import io.github.seantu.truckrobot.domain.BadCommandException;
 import io.github.seantu.truckrobot.domain.CommandBatchParser;
 import io.github.seantu.truckrobot.domain.CommandDispatcher;
 import io.github.seantu.truckrobot.domain.TruckRobot;
@@ -31,12 +32,16 @@ public class TruckRobotService {
     /**
      * Execute commands in batch
      * @param commands list of commands to execute
+     * @throws BadCommandException if one of the commands is not formatted correctly.
      * @return result of the last command executed
      */
     public synchronized String executeAll(List<String> commands) {
         String result = null;
         for (String command : commands) {
             result = execute(command);
+            if (result == null) {
+                throw new BadCommandException("BAD_COMMAND", "A command in a batch was not valid");
+            }
         }
         return result;
     }

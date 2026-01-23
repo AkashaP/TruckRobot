@@ -37,7 +37,11 @@ public final class CommandDispatcher {
     public String parseAndApply(String command, TruckRobot robot) {
         if (command == null || robot == null) return null;
 
-        String[] tokens = command.split(" ");
+        String[] tokens = command.trim().split(" ");
+
+        if (tokens.length == 0) {
+            return null;
+        }
 
         switch (tokens[0]) {
             case "PLACE" -> {
@@ -53,9 +57,11 @@ public final class CommandDispatcher {
                 }
 
                 robot.place(x, y, facing);
+                return "";
             }
             case "MOVE", "FORWARD" -> {
                 robot.move();
+                return "";
             }
             case "TURN" -> {
                 if (tokens.length != 2) {
@@ -66,18 +72,21 @@ public final class CommandDispatcher {
                     return null;
                 }
                 robot.turn(direction);
+                return "";
             }
             case "LEFT" -> {
                 if (tokens.length != 1) {
                     return null;
                 }
                 robot.turn(Direction.LEFT);
+                return "";
             }
             case "RIGHT" -> {
                 if (tokens.length != 1) {
                     return null;
                 }
                 robot.turn(Direction.RIGHT);
+                return "";
             }
             case "REPORT" -> {
                 return robot.report();
@@ -85,6 +94,5 @@ public final class CommandDispatcher {
             default -> { return null; }
         }
 
-        return null;
     }
 }

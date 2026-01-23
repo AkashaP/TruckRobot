@@ -35,7 +35,7 @@ public class TruckRobotWebTest {
 
     @Test
     void postMultipleCommandsService() throws Exception {
-        when(service.execute("PLACE 0 0 NORTH,REPORT")).thenReturn("0,0,NORTH");
+        when(service.executeAll("PLACE 0 0 NORTH,REPORT")).thenReturn("0,0,NORTH");
 
         mvc.perform(post("/api/v1/commands")
                         .contentType(MediaType.TEXT_PLAIN)
@@ -81,6 +81,47 @@ public class TruckRobotWebTest {
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(service);
+    }
+
+
+    @Test
+    void postInvalidFormatService() throws Exception {
+
+        mvc.perform(post("/api/v1/command")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"command\": \"PLACE A 3 WEST\"}")) // not an integer
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(post("/api/v1/commands")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"commands\": [\"PLACE A 3 WEST\", \"REPORT\"]}\"")) // not an integer
+                .andExpect(status().isBadRequest());
+
+
+        mvc.perform(post("/api/v1/commands")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"commands\": [\"PLACE 4 3 3 WEST\", \"REPORT\"]}\"")) // too many arguments
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void postInvalidNumberOfArgumentsService() throws Exception {
+
+        mvc.perform(post("/api/v1/command")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"command\": \"REPORT 3\"}")) // not an integer
+                .andExpect(status().isBadRequest());
+
+        mvc.perform(post("/api/v1/commands")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"commands\": [\"HELLO\", \"WORLD\"]}\"")) // not an integer
+                .andExpect(status().isBadRequest());
+
+
+        mvc.perform(post("/api/v1/commands")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"commands\": [\"PLACE 4 3 3 WEST\", \"REPORT\"]}\"")) // too many arguments
+                .andExpect(status().isBadRequest());
     }
 
 
