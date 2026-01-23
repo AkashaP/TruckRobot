@@ -9,7 +9,7 @@ public final class CommandDispatcher {
         try {
             return Integer.parseInt(s);
         } catch (NumberFormatException ex) {
-            return null;
+            throw new BadCommandException("BAD_COMMAND", "Invalid integer: " + s);
         }
     }
 
@@ -27,7 +27,7 @@ public final class CommandDispatcher {
      * - RIGHT
      *
      * EXAMPLES:
-     * - "PLACE 0 0 NORTH"
+     * - "PLACE 0,0,NORTH"
      * - "TURN RIGHT"
      * - "MOVE"
      *
@@ -46,49 +46,38 @@ public final class CommandDispatcher {
 
         switch (tokens[0]) {
             case "PLACE" -> {
-                if (tokens.length != 2) {
-                    return null;
-                }
+                if (tokens.length != 2) throw new BadCommandException("BAD_COMMAND", "PLACE requires X,Y,F");
                 String[] placeArgs = tokens[1].split(",");
+                if (placeArgs.length != 3) throw new BadCommandException("BAD_COMMAND", "PLACE requires X,Y,F");
 
-                if (placeArgs.length != 3) {
-                    return null;
-                }
-
-                Integer x = tryParseInt(placeArgs[0]);
-                Integer y = tryParseInt(placeArgs[1]);
+                int x = tryParseInt(placeArgs[0]);
+                int y = tryParseInt(placeArgs[1]);
                 Facing facing = Facing.parse(placeArgs[2]);
-
-                if (x == null || y == null || facing == null) {
-                    return null;
-                }
+                if (facing == null) throw new BadCommandException("BAD_COMMAND", "Invalid facing: " + placeArgs[2]);
 
                 robot.place(x, y, facing);
                 return "";
             }
             case "MOVE", "FORWARD" -> {
+                if (tokens.length != 1) throw new BadCommandException("BAD_COMMAND", "MOVE takes no args");
                 robot.move();
                 return "";
             }
             case "LEFT" -> {
-                if (tokens.length != 1) {
-                    return null;
-                }
+                if (tokens.length != 1) throw new BadCommandException("BAD_COMMAND", "LEFT takes no args");
                 robot.turn(Direction.LEFT);
                 return "";
             }
             case "RIGHT" -> {
-                if (tokens.length != 1) {
-                    return null;
-                }
+                if (tokens.length != 1) throw new BadCommandException("BAD_COMMAND", "RIGHT takes no args");
                 robot.turn(Direction.RIGHT);
                 return "";
             }
             case "REPORT" -> {
+                if (tokens.length != 1) throw new BadCommandException("BAD_COMMAND", "REPORT takes no args");
                 return robot.report();
             }
-            default -> { return null; }
+            default -> throw new BadCommandException("BAD_COMMAND", "Unknown command: " + tokens[0]);
         }
-
     }
 }

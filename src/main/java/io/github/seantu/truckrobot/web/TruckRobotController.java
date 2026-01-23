@@ -25,7 +25,7 @@ public class TruckRobotController {
     // Plaintext API
 
     @PostMapping(path = "/command", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<?> command(@RequestBody String command) {
+    public ResponseEntity<String> command(@RequestBody String command) {
         String result = this.service.execute(command);
 
         // Report HTTP 400
@@ -42,7 +42,7 @@ public class TruckRobotController {
     }
 
     @PostMapping(path = "/commands", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public ResponseEntity<?> commands(@RequestBody String commands) {
+    public ResponseEntity<String> commands(@RequestBody String commands) {
         try {
             String result = this.service.executeAll(commands);
 
@@ -65,12 +65,17 @@ public class TruckRobotController {
     // JSON API
     // DTOs
 
-    public record CommandRequest(@NotBlank String command) {}
-    public record CommandsRequest(@NotEmpty List<String> commands) {}
-    public record Response(String output) {}
+    public record CommandRequest(@NotBlank String command) {
+    }
+
+    public record CommandsRequest(@NotEmpty List<String> commands) {
+    }
+
+    public record Response(String output) {
+    }
 
     @PostMapping(path = "/command", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> commandJson(@Valid @RequestBody CommandRequest command) {
+    public ResponseEntity<Response> commandJson(@Valid @RequestBody CommandRequest command) {
         String result = this.service.execute(command.command());
 
         // Report HTTP 400
@@ -83,7 +88,7 @@ public class TruckRobotController {
     }
 
     @PostMapping(path = "/commands", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> commandsJson(@Valid @RequestBody CommandsRequest commands) {
+    public ResponseEntity<Response> commandsJson(@Valid @RequestBody CommandsRequest commands) {
         try {
             String result = this.service.executeAll(commands.commands());
 

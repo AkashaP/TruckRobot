@@ -12,6 +12,13 @@ public class CommandBatchParser {
      * @return a list of individual commands
      */
     public List<String> parseCommands(String commands) {
-        return Arrays.asList(commands.trim().split(";"));
+        if (commands == null || commands.isBlank()) {
+            throw new BadCommandException("BAD_COMMAND", "Commands are empty");
+        }
+        List<String> result = Arrays.asList(commands.trim().split(";"));
+        if (result.isEmpty()) {
+            throw new BadCommandException("BAD_COMMAND", "No valid commands found");
+        }
+        return result;
     }
 }

@@ -8,7 +8,9 @@ The robot begins in an unplaced (missing) state. While unplaced, movement and ro
 The project is written in Java 21 and maven
 
 ### Supported Commands
-- PLACE x y NORTH|EAST|SOUTH|WEST
+All commands and arguments must be in CAPITAL CASE
+
+- PLACE x,y,NORTH|EAST|SOUTH|WEST
 Places the robot at the given coordinates and facing direction.
 Invalid placements (out of bounds or null direction) are ignored.
 
@@ -23,9 +25,6 @@ Rotates the robot 90 degrees left
 - RIGHT
 Rotates the robot 90 degrees right
 
-- TURN LEFT|RIGHT
-Rotates the robot 90 degrees left or right.
-
 - REPORT
 Outputs the robot’s current position and facing direction, or
 ROBOT MISSING if the robot has not yet been placed.
@@ -33,6 +32,9 @@ ROBOT MISSING if the robot has not yet been placed.
 The API supports both text/plain and application/json request bodies:
 - text/plain is intended for quick manual testing (CLI-style commands).
 - application/json is the preferred format for production use.
+
+For the text/plain endpoint, commands without output return HTTP 204 (No Content).
+REPORT returns HTTP 200 with the output string in the response body.
 
 ### API Endpoints (v1):
 `/api/v1/command`
@@ -49,7 +51,7 @@ curl.exe -X POST http://localhost:8080/api/v1/command -H "Content-Type: text/pla
 ```
 ```
 curl.exe -X POST http://localhost:8080/api/v1/command -H "Content-Type: text/plain" --data "REPORT"
-"PLACE 1,1,NORTH"
+1,1,NORTH
 ```
 
 `/api/v1/commands`
@@ -70,7 +72,9 @@ curl.exe -X POST http://localhost:8080/api/v1/commands -H "Content-Type: text/pl
 
 A JSON API is provided. The Content-Type header should be set to application/json and the request must contain well-formatted JSON.
 
-Response objects are keyed with 'output'
+The JSON API response follows this format:
+{"output":"<string>"}
+Commands that do not produce output (MOVE/LEFT/RIGHT) return `{"output":""}`.
 
 `/api/v1/command`
 keyed with "command"
@@ -81,6 +85,7 @@ curl.exe -X POST http://localhost:8080/api/v1/command -H "Content-Type: applicat
 
 `/api/v1/commands`
 keyed with "commands"
+The commands are inputted as an array rather than semicolons like in the text/plain API
 ```
 curl.exe -X POST http://localhost:8080/api/v1/commands -H "Content-Type: application/json" --data "{\"commands\": [\"PLACE 3,3,WEST\",\"REPORT\"]}"
 {"output":"3,3,WEST"}

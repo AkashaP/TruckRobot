@@ -26,8 +26,13 @@ public class TruckRobotService {
      * @param command the command to execute
      */
     public synchronized String execute(String command) {
-        return dispatcher.parseAndApply(command, domain);
+        String result = dispatcher.parseAndApply(command, domain);
+        if (result == null) {
+            throw new BadCommandException("BAD_COMMAND", "Command is invalid");
+        }
+        return result;
     }
+
 
     /**
      * Execute commands in batch
@@ -39,20 +44,20 @@ public class TruckRobotService {
         String result = null;
         for (String command : commands) {
             result = execute(command);
-            if (result == null) {
-                throw new BadCommandException("BAD_COMMAND", "A command in a batch was not valid");
-            }
         }
         return result;
     }
 
     /**
      * Execute commands in batch
-     * @param commands string of commands to execute, each command is separated by a comma.
+     * @param commands string of commands to execute, each command is separated by a semicolon.
      * @return result of the last command executed
      */
     public synchronized String executeAll(String commands) {
-        List<String> commandsTokens = batchParser.parseCommands(commands);
-        return executeAll(commandsTokens);
+        List<String> tokens = batchParser.parseCommands(commands);
+        if (tokens == null) {
+            throw new BadCommandException("BAD_COMMAND", "Commands are invalid");
+        }
+        return executeAll(tokens);
     }
 }

@@ -82,6 +82,12 @@ class TruckRobotWebTest {
                                  { "command": "PLACE A,3,WEST" }
                                  """))
                 .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/v1/command")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                 { "command": "LEFT RIGHT" }
+                                 """))
+                .andExpect(status().isBadRequest());
     }
 
     /* -----------------------------
