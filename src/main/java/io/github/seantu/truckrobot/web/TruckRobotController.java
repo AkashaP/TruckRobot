@@ -1,14 +1,14 @@
 package io.github.seantu.truckrobot.web;
 
+import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.constraints.*;
 import java.util.List;
 
 // v1 API – future versions can be under /api/v2
 @RestController
-@RequestMapping(path = "/api/v1", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping("/api/v1")
 public class TruckRobotController {
 
     private final TruckRobotService service;
@@ -19,12 +19,12 @@ public class TruckRobotController {
 
     // Plaintext API
 
-    @PostMapping(path = "/command", consumes = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(path = "/command", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public String command(@RequestBody String command) {
         return this.service.execute(command);
     }
 
-    @PostMapping(path = "/commands", consumes = MediaType.TEXT_PLAIN_VALUE)
+    @PostMapping(path = "/commands", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
     public String commands(@RequestBody String commands) {
         return this.service.executeAll(commands);
     }
@@ -36,13 +36,13 @@ public class TruckRobotController {
     public record CommandsRequest(@NotEmpty List<String> commands) {}
     public record Response(String output) {}
 
-    @PostMapping(path = "/command", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Response commandJson(@RequestBody CommandRequest command) {
+    @PostMapping(path = "/command", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response commandJson(@Valid @RequestBody CommandRequest command) {
         return new Response(this.service.execute(command.command()));
     }
 
-    @PostMapping(path = "/commands", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Response commandsJson(@RequestBody CommandsRequest commands) {
+    @PostMapping(path = "/commands", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response commandsJson(@Valid @RequestBody CommandsRequest commands) {
         return new Response(this.service.executeAll(commands.commands()));
     }
 }
