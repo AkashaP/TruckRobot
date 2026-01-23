@@ -10,119 +10,179 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(TruckRobotController.class)
-public class TruckRobotWebTest {
+class TruckRobotWebTest {
 
-    @Autowired MockMvc mvc;
+    @Autowired
+    MockMvc mvc;
 
-    @MockitoBean TruckRobotService service;
+    @MockitoBean
+    TruckRobotService service;
+
+    /* -----------------------------
+     * /api/v1/command — TEXT
+     * ----------------------------- */
 
     @Test
-    void postCommandService() throws Exception {
+    void postTextCommand_returnsPlainTextOutput() throws Exception {
         when(service.execute("REPORT")).thenReturn("ROBOT MISSING");
 
         mvc.perform(post("/api/v1/command")
                         .contentType(MediaType.TEXT_PLAIN)
+                        .accept(MediaType.TEXT_PLAIN)
                         .content("REPORT"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
+                .andExpect(content().string("ROBOT MISSING"));
 
         verify(service).execute("REPORT");
         verifyNoMoreInteractions(service);
     }
 
-    @Test
-    void postMultipleCommandsService() throws Exception {
-        when(service.executeAll("PLACE 0 0 NORTH,REPORT")).thenReturn("0,0,NORTH");
-
-        mvc.perform(post("/api/v1/commands")
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .content("PLACE 0 0 NORTH,REPORT"))
-                .andExpect(status().isOk());
-
-        verify(service).executeAll("PLACE 0 0 NORTH,REPORT");
-        verifyNoMoreInteractions(service);
-    }
+    /* -----------------------------
+     * /api/v1/command — JSON
+     * ----------------------------- */
 
     @Test
-    void postJSONCommandService() throws Exception {
-        when(service.execute("REPORT")).thenReturn("{\"output\":\"ROBOT MISSING\"}");
+    void postJsonCommand_returnsWrappedJsonOutput() throws Exception {
+        when(service.execute("REPORT")).thenReturn("ROBOT MISSING");
 
         mvc.perform(post("/api/v1/command")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content("{ \"command\": \"REPORT\"}"))
-                .andExpect(status().isOk());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content("""
+                                 { "command": "REPORT" }
+                                 """))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.output").value("ROBOT MISSING"));
 
         verify(service).execute("REPORT");
         verifyNoMoreInteractions(service);
     }
 
     @Test
-    void postJSONMultipleCommandsService() throws Exception {
-        when(service.executeAll(List.of("PLACE 0 0 NORTH", "REPORT")))
-                .thenReturn(List.of("0,0,NORTH").toString());
-
-        mvc.perform(post("/api/v1/commands")
+    void postJsonCommand_withMalformedJson_returns400_andDoesNotInvokeService() throws Exception {
+        mvc.perform(post("/api/v1/command")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{ \"commands\": [\"PLACE 0 0 NORTH\", \"REPORT\"] }"))
-                .andExpect(status().isOk());
-
-        verify(service).executeAll(List.of("PLACE 0 0 NORTH", "REPORT"));
-        verifyNoMoreInteractions(service);
-    }
-
-    @Test
-    void postInvalidJSONService() throws Exception {
-        mvc.perform(post("/api/v1/commands")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{ \"commands\": [ \"REPORT\" ")) // malformed JSON, no ending brackets
+                        .content("{ \"command\": REPORT }")) // invalid JSON
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(service);
     }
 
-
     @Test
-    void postInvalidFormatService() throws Exception {
-
+    void postJsonCommand_withInvalidCommandFormat_returns400() throws Exception {
         mvc.perform(post("/api/v1/command")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"command\": \"PLACE A 3 WEST\"}")) // not an integer
+                        .content("""
+                                 { "command": "PLACE A,3,WEST" }
+                                 """))
                 .andExpect(status().isBadRequest());
+    }
+
+    /* -----------------------------
+     * /api/v1/commands — TEXT
+     * ----------------------------- */
+
+    @Test
+    void postTextBatchCommands_returnsFinalReportOutput() throws Exception {
+        when(service.executeAll("PLACE 0,0,NORTH;MOVE;REPORT"))
+                .thenReturn("0,1,NORTH");
+
+        mvc.perform(post("/api/v1/commands")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .accept(MediaType.TEXT_PLAIN)
+                        .content("PLACE 0,0,NORTH;MOVE;REPORT"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_PLAIN))
+                .andExpect(content().string("0,1,NORTH"));
+
+        verify(service).executeAll("PLACE 0,0,NORTH;MOVE;REPORT");
+        verifyNoMoreInteractions(service);
+    }
+
+    /* -----------------------------
+     * /api/v1/commands — JSON
+     * ----------------------------- */
+
+    @Test
+    void postJsonBatchCommands_returnsWrappedJsonOutput() throws Exception {
+        when(service.executeAll(List.of("PLACE 0,0,NORTH", "REPORT")))
+                .thenReturn("0,0,NORTH");
 
         mvc.perform(post("/api/v1/commands")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"commands\": [\"PLACE A 3 WEST\", \"REPORT\"]}\"")) // not an integer
-                .andExpect(status().isBadRequest());
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content("""
+                                 {
+                                   "commands": [
+                                     "PLACE 0,0,NORTH",
+                                     "REPORT"
+                                   ]
+                                 }
+                                 """))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.output").value("0,0,NORTH"));
 
+        verify(service).executeAll(List.of("PLACE 0,0,NORTH", "REPORT"));
+        verifyNoMoreInteractions(service);
+    }
 
+    @Test
+    void postJsonBatchCommands_withMalformedJson_returns400() throws Exception {
         mvc.perform(post("/api/v1/commands")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"commands\": [\"PLACE 4 3 3 WEST\", \"REPORT\"]}\"")) // too many arguments
+                        .content("""
+                                 { "commands": [ "REPORT" }
+                                 """)) // missing closing ]
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(service);
+    }
+
+    @Test
+    void postJsonBatchCommands_withInvalidCommand_returns400() throws Exception {
+        mvc.perform(post("/api/v1/commands")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                 {
+                                   "commands": [
+                                     "PLACE 4,3,3,WEST",
+                                     "REPORT"
+                                   ]
+                                 }
+                                 """))
+                .andExpect(status().isBadRequest());
+        mvc.perform(post("/api/v1/commands")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                 {
+                                   "commands": [
+                                     "PLACE 4,3,",
+                                     "REPORT"
+                                   ]
+                                 }
+                                 """))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void postInvalidNumberOfArgumentsService() throws Exception {
-
-        mvc.perform(post("/api/v1/command")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"command\": \"REPORT 3\"}")) // not an integer
-                .andExpect(status().isBadRequest());
-
+    void postJsonBatchCommands_withUnknownCommands_returns400() throws Exception {
         mvc.perform(post("/api/v1/commands")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"commands\": [\"HELLO\", \"WORLD\"]}\"")) // not an integer
-                .andExpect(status().isBadRequest());
-
-
-        mvc.perform(post("/api/v1/commands")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"commands\": [\"PLACE 4 3 3 WEST\", \"REPORT\"]}\"")) // too many arguments
+                        .content("""
+                                 {
+                                   "commands": [
+                                     "HELLO",
+                                     "WORLD"
+                                   ]
+                                 }
+                                 """))
                 .andExpect(status().isBadRequest());
     }
-
-
 }

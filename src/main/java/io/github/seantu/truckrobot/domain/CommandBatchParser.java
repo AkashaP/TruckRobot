@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 public class CommandBatchParser {
     /**
      * Takes a batch of commands into a format that can be dispatched individually
-     * @param commands the commands, separated by commas
+     * @param commands the commands, separated by semicolons
      * @return a list of individual commands
      */
     public List<String> parseCommands(String commands) {
-        return Arrays.asList(commands.trim().split(","));
+        return Arrays.asList(commands.trim().split(";"));
     }
 }

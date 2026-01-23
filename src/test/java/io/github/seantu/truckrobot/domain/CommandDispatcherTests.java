@@ -31,12 +31,6 @@ public class CommandDispatcherTests {
         TruckRobot robot = mock(TruckRobot.class);
 
         CommandDispatcher parser = new CommandDispatcher();
-        parser.parseAndApply("TURN LEFT", robot);
-        verify(robot).turn(Direction.LEFT);
-        reset(robot);
-        parser.parseAndApply("TURN RIGHT", robot);
-        verify(robot).turn(Direction.RIGHT);
-        reset(robot);
         parser.parseAndApply("LEFT", robot);
         verify(robot).turn(Direction.LEFT);
         reset(robot);
@@ -49,7 +43,7 @@ public class CommandDispatcherTests {
         TruckRobot robot = mock(TruckRobot.class);
 
         CommandDispatcher parser = new CommandDispatcher();
-        parser.parseAndApply("PLACE 2 2 NORTH", robot);
+        parser.parseAndApply("PLACE 2,2,NORTH", robot);
         verify(robot).place(2, 2, Facing.NORTH);
     }
 }

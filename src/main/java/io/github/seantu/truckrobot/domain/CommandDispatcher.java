@@ -23,21 +23,22 @@ public final class CommandDispatcher {
      * - PLACE x(int) y(int) NORTH|EAST|SOUTH|WEST
      * - MOVE
      * - REPORT
-     * - TURN LEFT|RIGHT
+     * - LEFT
+     * - RIGHT
      *
      * EXAMPLES:
      * - "PLACE 0 0 NORTH"
      * - "TURN RIGHT"
      * - "MOVE"
      *
-     * Invalid inputs will generally be ignored.
+     * Invalid commands return null (caller should treat as bad input).
      * @param command the command expression as specified above
      * @param robot applies parsed commands on this robot object
      */
     public String parseAndApply(String command, TruckRobot robot) {
         if (command == null || robot == null) return null;
 
-        String[] tokens = command.trim().split(" ");
+        String[] tokens = command.trim().split("\\s+");
 
         if (tokens.length == 0) {
             return null;
@@ -45,12 +46,18 @@ public final class CommandDispatcher {
 
         switch (tokens[0]) {
             case "PLACE" -> {
-                if (tokens.length != 4) {
+                if (tokens.length != 2) {
                     return null;
                 }
-                Integer x = tryParseInt(tokens[1]);
-                Integer y = tryParseInt(tokens[2]);
-                Facing facing = Facing.parse(tokens[3]);
+                String[] placeArgs = tokens[1].split(",");
+
+                if (placeArgs.length != 3) {
+                    return null;
+                }
+
+                Integer x = tryParseInt(placeArgs[0]);
+                Integer y = tryParseInt(placeArgs[1]);
+                Facing facing = Facing.parse(placeArgs[2]);
 
                 if (x == null || y == null || facing == null) {
                     return null;
@@ -61,17 +68,6 @@ public final class CommandDispatcher {
             }
             case "MOVE", "FORWARD" -> {
                 robot.move();
-                return "";
-            }
-            case "TURN" -> {
-                if (tokens.length != 2) {
-                    return null;
-                }
-                Direction direction = Direction.parse(tokens[1]);
-                if (direction == null) {
-                    return null;
-                }
-                robot.turn(direction);
                 return "";
             }
             case "LEFT" -> {

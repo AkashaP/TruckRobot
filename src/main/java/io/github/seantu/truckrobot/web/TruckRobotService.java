@@ -14,8 +14,8 @@ public class TruckRobotService {
     private final CommandDispatcher dispatcher;
     private final CommandBatchParser batchParser;
 
-    public TruckRobotService(TruckRobot domain, CommandDispatcher dispatcher, CommandBatchParser batchParser) {
-        this.domain = domain;
+    public TruckRobotService(CommandDispatcher dispatcher, CommandBatchParser batchParser) {
+        this.domain = new TruckRobot();
         this.dispatcher = dispatcher;
         this.batchParser = batchParser;
     }

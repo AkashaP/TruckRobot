@@ -1,7 +1,5 @@
 package io.github.seantu.truckrobot.domain;
 
-import org.springframework.stereotype.Component;
-
 /**
  * Models a TruckRobot operating in a grid of set size.
  *
@@ -9,7 +7,6 @@ import org.springframework.stereotype.Component;
  * While unplaced, movement and rotation commands are ignored.
  * All commands are validated to ensure the robot never leaves the table.
  */
-@Component
 public final class TruckRobot {
 
     private static final int MIN_X = 0;
@@ -43,13 +40,13 @@ public final class TruckRobot {
         int dx = 0;
         int dy = 0;
         switch (facing) {
-            case Facing.NORTH ->
+            case NORTH ->
                 dy = 1;
-            case Facing.EAST ->
+            case EAST ->
                 dx = 1;
-            case Facing.SOUTH ->
+            case SOUTH ->
                 dy = -1;
-            case Facing.WEST ->
+            case WEST ->
                 dx = -1;
         }
 
@@ -85,7 +82,7 @@ public final class TruckRobot {
      * @param direction the direction to turn.
      */
     public void turn(Direction direction) {
-        if (!placed)
+        if (!placed || direction == null)
             return;
         switch (direction) {
             case Direction.LEFT -> {

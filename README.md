@@ -44,25 +44,25 @@ Example:
 
 Example usages using curl through cmd.exe:
 ```
-curl.exe -X POST http://localhost:8080/api/v1/command -H "Content-Type: text/plain" --data "PLACE 1 1 NORTH"
+curl.exe -X POST http://localhost:8080/api/v1/command -H "Content-Type: text/plain" --data "PLACE 1,1,NORTH"
 ```
 ```
 curl.exe -X POST http://localhost:8080/api/v1/command -H "Content-Type: text/plain" --data "REPORT"
-"PLACE 1 1 NORTH"
+"PLACE 1,1,NORTH"
 ```
 
 `/api/v1/commands`
 Execute a batch of commands.
-Each command is separated by a comma.
+Each command is separated by a semicolon.
 This is equivalent to sending individual commands to /api/v1/command
 The response will be the result of the last command in the batch.
 
 Example:
-"PLACE 1 1 NORTH,MOVE,REPORT"
+"PLACE 1,1,NORTH;MOVE;REPORT"
 
 Example usage using curl:
 ```
-curl.exe -X POST http://localhost:8080/api/v1/commands -H "Content-Type: text/plain" --data "PLACE 1 1 NORTH,MOVE,TURN LEFT,REPORT"
+curl.exe -X POST http://localhost:8080/api/v1/commands -H "Content-Type: text/plain" --data "PLACE 1,1,NORTH;MOVE;LEFT;REPORT"
 1,2,WEST
 ```
 ### JSON API:
@@ -81,7 +81,7 @@ curl.exe -X POST http://localhost:8080/api/v1/command -H "Content-Type: applicat
 `/api/v1/commands`
 keyed with "commands"
 ```
-curl.exe -X POST http://localhost:8080/api/v1/commands -H "Content-Type: application/json" --data "{\"commands\": [\"PLACE 3 3 WEST\",\"REPORT\"]}"
+curl.exe -X POST http://localhost:8080/api/v1/commands -H "Content-Type: application/json" --data "{\"commands\": [\"PLACE 3,3,WEST\",\"REPORT\"]}"
 {"output":"3,3,WEST"}
 ```
 
