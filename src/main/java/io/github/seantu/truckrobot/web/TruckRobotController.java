@@ -4,6 +4,7 @@ import io.github.seantu.truckrobot.domain.BadCommandException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.constraints.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,24 +22,41 @@ public class TruckRobotController {
         this.service = service;
     }
 
-
     // Plaintext API
 
     @PostMapping(path = "/command", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public String command(@RequestBody String command) {
+    public ResponseEntity<?> command(@RequestBody String command) {
         String result = this.service.execute(command);
+
+        // Report HTTP 400
         if (result == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad input");
-        return result;
+
+        // Report HTTP 204
+        if (result.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        // Report HTTP 200
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping(path = "/commands", consumes = MediaType.TEXT_PLAIN_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
-    public String commands(@RequestBody String commands) {
+    public ResponseEntity<?> commands(@RequestBody String commands) {
         try {
             String result = this.service.executeAll(commands);
+
+            // Report HTTP 400
             if (result == null)
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad input");
-            return result;
+
+            // Report HTTP 204
+            if (result.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+
+            // Report HTTP 200
+            return ResponseEntity.ok(result);
         } catch (BadCommandException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad input");
         }
@@ -50,23 +68,31 @@ public class TruckRobotController {
     public record CommandRequest(@NotBlank String command) {}
     public record CommandsRequest(@NotEmpty List<String> commands) {}
     public record Response(String output) {}
-    public record CommandResult(boolean accepted, boolean report, String output) {}
 
     @PostMapping(path = "/command", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response commandJson(@Valid @RequestBody CommandRequest command) {
+    public ResponseEntity<?> commandJson(@Valid @RequestBody CommandRequest command) {
         String result = this.service.execute(command.command());
-        if (result == null)
+
+        // Report HTTP 400
+        if (result == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad input");
-        return new Response(result);
+        }
+
+        // Report HTTP 200
+        return ResponseEntity.ok(new Response(result));
     }
 
     @PostMapping(path = "/commands", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response commandsJson(@Valid @RequestBody CommandsRequest commands) {
+    public ResponseEntity<?> commandsJson(@Valid @RequestBody CommandsRequest commands) {
         try {
             String result = this.service.executeAll(commands.commands());
+
+            // Report HTTP 400
             if (result == null)
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad input");
-            return new Response(result);
+
+            // Report HTTP 200
+            return ResponseEntity.ok(new Response(result));
         } catch (BadCommandException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad input");
         }

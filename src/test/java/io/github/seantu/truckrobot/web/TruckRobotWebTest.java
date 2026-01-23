@@ -105,6 +105,36 @@ class TruckRobotWebTest {
         verifyNoMoreInteractions(service);
     }
 
+    // Only relevant for plaintext API
+    @Test
+    void postCommandNoReport_returns204() throws Exception {
+        when(service.execute("PLACE 0,0,NORTH"))
+                .thenReturn("");
+
+        mvc.perform(post("/api/v1/command")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .accept(MediaType.TEXT_PLAIN)
+                        .content("PLACE 0,0,NORTH"))
+                .andExpect(status().is(204));
+
+        verify(service).execute("PLACE 0,0,NORTH");
+    }
+
+    // Only relevant for plaintext API
+    @Test
+    void postCommandsBatchNoReport_returns204() throws Exception {
+        when(service.executeAll("PLACE 0,0,NORTH;RIGHT"))
+                .thenReturn("");
+
+        mvc.perform(post("/api/v1/commands")
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .accept(MediaType.TEXT_PLAIN)
+                        .content("PLACE 0,0,NORTH;RIGHT"))
+                .andExpect(status().is(204));
+
+        verify(service).executeAll("PLACE 0,0,NORTH;RIGHT");
+    }
+
     /* -----------------------------
      * /api/v1/commands — JSON
      * ----------------------------- */

@@ -45,6 +45,7 @@ Example:
 Example usages using curl through cmd.exe:
 ```
 curl.exe -X POST http://localhost:8080/api/v1/command -H "Content-Type: text/plain" --data "PLACE 1,1,NORTH"
+<HTTP 204>
 ```
 ```
 curl.exe -X POST http://localhost:8080/api/v1/command -H "Content-Type: text/plain" --data "REPORT"
