@@ -17,6 +17,12 @@ Moves the robot one unit forward in the direction it is currently facing.
 Moves that would cause the robot to fall off the table are ignored.
 (also aliased to FORWARD)
 
+- LEFT
+Rotates the robot 90 degrees left
+
+- RIGHT
+Rotates the robot 90 degrees right
+
 - TURN LEFT|RIGHT
 Rotates the robot 90 degrees left or right.
 

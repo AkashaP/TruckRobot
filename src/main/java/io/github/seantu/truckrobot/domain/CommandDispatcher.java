@@ -67,6 +67,18 @@ public final class CommandDispatcher {
                 }
                 robot.turn(direction);
             }
+            case "LEFT" -> {
+                if (tokens.length != 1) {
+                    return null;
+                }
+                robot.turn(Direction.LEFT);
+            }
+            case "RIGHT" -> {
+                if (tokens.length != 1) {
+                    return null;
+                }
+                robot.turn(Direction.RIGHT);
+            }
             case "REPORT" -> {
                 return robot.report();
             }
