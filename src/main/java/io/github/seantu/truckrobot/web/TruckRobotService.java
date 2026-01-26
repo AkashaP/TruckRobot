@@ -41,6 +41,9 @@ public class TruckRobotService {
      * @return result of the last command executed
      */
     public synchronized String executeAll(List<String> commands) {
+        if (commands == null) {
+            throw new BadCommandException("BAD_COMMAND", "Commands are invalid");
+        }
         String result = null;
         for (String command : commands) {
             result = execute(command);
@@ -54,6 +57,9 @@ public class TruckRobotService {
      * @return result of the last command executed
      */
     public synchronized String executeAll(String commands) {
+        if (commands == null || commands.isEmpty()) {
+            throw new BadCommandException("BAD_COMMAND", "Commands are invalid");
+        }
         List<String> tokens = batchParser.parseCommands(commands);
         if (tokens == null) {
             throw new BadCommandException("BAD_COMMAND", "Commands are invalid");
